@@ -28,18 +28,17 @@ Data Volume:
 - `recipe`
     - Rows and Columns: 83782 rows (recipes) and 12 columns
     -  The relevant columns from `recipes`: `name`, `id`, `minutes`, `nutrition`,`n_steps`, `n_ingredients`.
-| Column Name | Description |
-| :------- | :------ |
-| `name`    | Recipe name |
-| `id`  | Recipe ID
-     |
-| `minutes`  | Minutes to Prepare Recipe
-     |
-| `nutrition`  | Nutrition Information In Form: [calories (#), total fat (PDV), sugar (PDV), sodium (PDV), protein (PDV), saturated fat (PDV), carbohydrates (PDV)]; PDV stands for "percentage of daily value" |
-| `n_steps`  | Number of Steps in Recipe
-     |
-| `n_ingredients`  | User-provided Description
-     |
+| Column             | Description                                                                                                                                                                                       |
+| :----------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `'name'`           | Recipe name                                                                                                                                                                                       |
+| `'id'`             | Recipe ID                                                                                                                                                                                         |
+| `'minutes'`        | Minutes to prepare recipe                                                                                                                                                                         |
+| `'nutrition'`      | Nutrition information in the form [calories (#), total fat (PDV), sugar (PDV), sodium (PDV), protein (PDV), saturated fat (PDV), carbohydrates (PDV)]; PDV stands for “percentage of daily value” |
+| `'n_steps'`        | Number of steps in recipe                                                                                                                                                                         |
+| `'steps'`          | Text for recipe steps, in order                                                                                                                                                                   |
+| `'description'`    | User-provided description                                                                                                                                                                         |
+| `'n_ingredients'`  | Number of ingredients in recipe                                                                                                                                                                   |
+
 
 - `ratings`
     - Rows and Columns: 731927 rows (recipes) and 5 columns
@@ -48,11 +47,6 @@ Data Volume:
 | :------- | :------ |
 | `recipe_id`  | Recipe ID |
 | `rating`  | Rating Given |
-        
-
-
-
-***
 
 
 
