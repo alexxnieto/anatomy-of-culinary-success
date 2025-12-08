@@ -56,9 +56,11 @@ Data Volume:
 ### Combining Recipe and Rating Data
 
 To begin the analysis, two primary datasets were merged: the **recipes** dataset (containing information such as preparation time, ingredients, and nutritional values) and the **ratings** dataset (containing individual user ratings for each recipe).  
+
 The merge was performed on the shared key column, `recipe_id`, using an **inner join** to ensure that only recipes with at least one corresponding rating were included in the resulting dataset.
 
 After merging, an **`avg_rating`** column was created to represent the **average user rating** for each recipe.  
+
 This was calculated by grouping all individual ratings associated with a given `recipe_id` and computing their mean. This provided a continuous target variable useful for subsequent regression modeling.
 
 Next, the **`nutrition`** column — originally stored as a single list-like string (e.g., `[138.4, 10.0, 50.0, 3.0, 3.0, 19.0, 6.0]`) — was **split into seven separate numerical columns** representing specific nutritional attributes:
@@ -72,14 +74,67 @@ Next, the **`nutrition`** column — originally stored as a single list-like str
 
 Each of these columns was cast as a float type to ensure numerical compatibility for later modeling and analysis.
 
-The final cleaned and merged dataset, named **`recipe_ratings`**, contains:
+The cleaned and merged dataset, named **`recipe_ratings`**, contains:
 - Recipe-level information (`minutes`, `n_steps`, `n_ingredients`, etc.)
 - Nutritional composition from the expanded nutrition columns
 - Descriptive metadata (e.g., `description`, `tags`)
 - The computed **average recipe rating (`avg_rating`)**
 
-This resulting DataFrame served as the **foundation for all exploratory analysis, hypothesis testing, and predictive modeling** conducted in subsequent steps.
+After merging and cleaning the data, exploratory analysis was performed to understand the distributions of key recipe complexity indicators:  
+- **Preparation time (`minutes`)**  
+- **Number of steps (`n_steps`)**  
+- **Number of ingredients (`n_ingredients`)**
 
+To ensure reasonable comparison and to exclude extreme outliers (e.g., unusually long recipes), recipes with preparation times above 1,440 minutes (24 hours) were removed.  
+
+Histograms were then generated to visualize how recipes are distributed across each of these attributes.
+
+<iframe
+  src="images/img1.html"
+  width="800"
+  height="600"
+  frameborder="0"
+></iframe>
+
+<iframe
+  src="images/img2.html"
+  width="800"
+  height="600"
+  frameborder="0"
+></iframe>
+
+<iframe
+  src="images/img3.html"
+  width="800"
+  height="600"
+  frameborder="0"
+></iframe>
+
+### Exploring Recipe Complexity
+
+The distributions revealed that most recipes cluster toward the **lower end** of preparation time, number of steps, and ingredient count.  
+All three variables were found to be **right-skewed**, meaning that while most recipes are simple and quick to prepare, a small portion take significantly more time or effort.
+
+To better characterize what “typical” recipes look like, **median values** were calculated for each of these features:
+
+- Median preparation time (`minutes`): **35 minutes**  
+- Median number of steps (`n_steps`): **9 steps**  
+- Median number of ingredients (`n_ingredients`): **9 ingredients**
+
+These medians represent what can reasonably be considered an **average or standard recipe** in the dataset.  
+Recipes that fall at or below these medians are notably simpler and faster to prepare.
+
+### Defining a “Quick & Easy” Recipe Category
+
+Using these thresholds, a new **Boolean indicator column** named `quick_easy` was created to identify recipes that meet all three of the following criteria:
+- **Quick:** preparation time ≤ 35 minutes  
+- **Simple (steps):** ≤ 9 steps  
+- **Simple (ingredients):** ≤ 9 ingredients  
+
+If a recipe satisfies all three conditions, `quick_easy = True`; otherwise, it is labeled `False`.
+
+This classification serves as a way to distinguish **simpler, more accessible recipes** from those that are more time-consuming or complex.  
+By explicitly marking this subset of recipes, later analyses could explore whether *quick and easy* recipes differ meaningfully in their **average user ratings**, **nutritional values**, or **model fairness** — ultimately helping to reveal how convenience influences perceived recipe quality.
 
 
 
