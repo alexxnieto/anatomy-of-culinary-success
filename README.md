@@ -288,11 +288,11 @@ We examined whether the missingness of the `description` column in `recipe_ratin
 
 The permutation tests reveal contrasting patterns in how missingness of the `description` column relates to other recipe attributes.  
 
-For **`minutes`**, the observed difference in means between recipes with and without missing descriptions was small, and the p-value was high (*p* ≈ 0.56). This indicates that we **fail to reject the null hypothesis**, suggesting that the likelihood of a missing description is independent of the time required to prepare a recipe.  
+For **`minutes`**, the observed difference in means between recipes with and without missing descriptions was small, and the p-value was high (*p* ≈ 0.29). This indicates that we **fail to reject the null hypothesis**, suggesting that the likelihood of a missing description is independent of the time required to prepare a recipe.  
 
 This pattern is consistent with a **Missing Completely at Random (MCAR)** mechanism.  
 
-In contrast, for **`avg_rating`**, the observed difference was more pronounced, and the permutation test yielded a low p-value (*p* ≈ 0.004). We therefore **reject the null hypothesis** and conclude that the missingness of `description` is **dependent on `avg_rating`**.  
+In contrast, for **`avg_rating`**, the observed difference was more pronounced, and the permutation test yielded a low p-value (*p* ≈ 0.002). We therefore **reject the null hypothesis** and conclude that the missingness of `description` is **dependent on `avg_rating`**.  
 
 Overall, these results indicate that while `minutes` is unrelated to missingness, `avg_rating` exhibits a **Missing At Random (MAR)** relationship with `description`.
 
@@ -329,7 +329,7 @@ This analysis helps reveal whether users tend to reward convenience and efficien
 ### Analysis of Hypothesis Test Results
 
 The permutation test reveals a strong and statistically significant difference in user ratings between *Quick & Easy* and *Other* recipes.  
-The observed difference in mean ratings <code>x̄<sub>Quick & Easy</sub> − x̄<sub>Other</sub></code> = 0.1117 is positive, indicating that *Quick & Easy* recipes, on average, receive higher ratings.  
+The observed difference in mean ratings <code>x̄<sub>Quick & Easy</sub> − x̄<sub>Other</sub></code> = 0.1133 is positive, indicating that *Quick & Easy* recipes, on average, receive higher ratings.  
 
 The p-value from the one-sided permutation test is **p = 0.0000**, which is well below the significance threshold of 0.05. This means we **reject the null hypothesis** and conclude that the difference in average ratings is unlikely to have occurred by chance.  
 
@@ -490,7 +490,7 @@ The final Random Forest Regressor demonstrates a meaningful performance improvem
 To test for fairness of our final model on different groups, I used the *trained Random Forest Regressor* (which excluded `quick_easy` as a feature) and computed the RMSE for each group:
 
 - RMSE (Quick & Easy): 0.3493   
-- RMSE (Other Recipes): 0.3855 
+- RMSE (Other Recipes): 0.3858 
 
 **Interpretation:**  
 The model achieves **lower error for Quick & Easy recipes**, suggesting it predicts user ratings for these faster, simpler recipes more accurately than for more complex ones. This difference implies that the model generalizes better for straightforward, low-effort dishes, possibly because such recipes exhibit more consistent patterns in numeric features (e.g., minutes, steps, and calories).  
@@ -528,10 +528,10 @@ Difference in RMSE between groups (Quick & Easy − Other Recipes)
 
 #### Results
 - **Observed RMSE difference:** −0.0365  
-- **Permutation p-value:** 0.0070  
+- **Permutation p-value:** 0.0090  
 
 The **negative observed difference** indicates that the model’s RMSE is **lower for Quick & Easy recipes**, meaning it predicts these simpler, faster recipes more accurately than more complex ones.  
-The **p-value of 0.0070** suggests this difference is statistically significant at the 0.05 level, providing strong evidence that the model performs differently across the two groups.
+The **p-value of 0.0090** suggests this difference is statistically significant at the 0.05 level, providing strong evidence that the model performs differently across the two groups.
 
 ---
 
