@@ -288,7 +288,7 @@ We examined whether the missingness of the `description` column in `recipe_ratin
 
 The permutation tests reveal contrasting patterns in how missingness of the `description` column relates to other recipe attributes.  
 
-For **`minutes`**, the observed difference in means between recipes with and without missing descriptions was small, and the p-value was high (*p* ≈ 0.29). This indicates that we **fail to reject the null hypothesis**, suggesting that the likelihood of a missing description is independent of the time required to prepare a recipe.  
+For **`minutes`**, the observed difference in means between recipes with and without missing descriptions was small, and the p-value was high (*p* ≈ 0.31). This indicates that we **fail to reject the null hypothesis**, suggesting that the likelihood of a missing description is independent of the time required to prepare a recipe.  
 
 This pattern is consistent with a **Missing Completely at Random (MCAR)** mechanism.  
 
@@ -528,10 +528,10 @@ Difference in RMSE between groups (Quick & Easy − Other Recipes)
 
 #### Results
 - **Observed RMSE difference:** −0.0365  
-- **Permutation p-value:** 0.0090  
+- **Permutation p-value:** 0.0050  
 
 The **negative observed difference** indicates that the model’s RMSE is **lower for Quick & Easy recipes**, meaning it predicts these simpler, faster recipes more accurately than more complex ones.  
-The **p-value of 0.0090** suggests this difference is statistically significant at the 0.05 level, providing strong evidence that the model performs differently across the two groups.
+The **p-value of 0.0050** suggests this difference is statistically significant at the 0.05 level, providing strong evidence that the model performs differently across the two groups.
 
 ---
 
