@@ -113,6 +113,7 @@ Histograms were then generated to visualize how recipes are distributed across e
 ### Exploring Recipe Complexity
 
 The distributions revealed that most recipes cluster toward the **lower end** of preparation time, number of steps, and ingredient count.  
+
 All three variables were found to be **right-skewed**, meaning that while most recipes are simple and quick to prepare, a small portion take significantly more time or effort.
 
 To better characterize what “typical” recipes look like, **median values** were calculated for each of these features:
@@ -121,7 +122,8 @@ To better characterize what “typical” recipes look like, **median values** w
 - Median number of steps (`n_steps`): **9 steps**  
 - Median number of ingredients (`n_ingredients`): **9 ingredients**
 
-These medians represent what can reasonably be considered an **average or standard recipe** in the dataset.  
+These medians represent what can reasonably be considered an **average or standard recipe** in the dataset.
+
 Recipes that fall at or below these medians are notably simpler and faster to prepare.
 
 ### Defining a “Quick & Easy” Recipe Category
@@ -133,10 +135,11 @@ Using these thresholds, a new **Boolean indicator column** named `quick_easy` wa
 
 If a recipe satisfies all three conditions, `quick_easy = True`; otherwise, it is labeled `False`.
 
-This classification serves as a way to distinguish **simpler, more accessible recipes** from those that are more time-consuming or complex.  
+This classification serves as a way to distinguish **simpler, more accessible recipes** from those that are more time-consuming or complex.
+
 By explicitly marking this subset of recipes, later analyses could explore whether *quick and easy* recipes differ meaningfully in their **average user ratings**, **nutritional values**, or **model fairness** — ultimately helping to reveal how convenience influences perceived recipe quality.
 
-Below is the final `recipe_ratings` dataframe to be used for the rest of the analysis:
+Below is the final `recipe_ratings` dataframe (with only relevant columns depicted) to be used for the rest of the analysis:
 
 | name                                 |   minutes |   n_steps | description                                                                                                                                                                                                                                                                                                                                                                       |   n_ingredients |   rating |   avg_rating |   calories |   total_fat |   sugar |   sodium |   protein |   saturated_fats |   carbohydrates | quick_easy   |
 |:-------------------------------------|----------:|----------:|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------:|---------:|-------------:|-----------:|------------:|--------:|---------:|----------:|-----------------:|----------------:|:-------------|
@@ -157,8 +160,7 @@ Let's look at the proportion of `quick_easy` recipes in our complete dataframe:
 
 ### Distribution of "Quick & Easy" Recipes
 
-After defining the `quick_easy` indicator using data-driven thresholds (≤ 35 minutes, ≤ 9 steps, ≤ 9 ingredients),  
-we found that approximately **30% of recipes** meet these criteria, while **70% do not**.
+After defining the `quick_easy` indicator using data-driven thresholds (≤ 35 minutes, ≤ 9 steps, ≤ 9 ingredients), we found that approximately **30% of recipes** meet these criteria, while **70% do not**.
 
 This distribution indicates that:
 - A substantial minority of recipes can be described as *Quick & Easy*, aligning with the right-skewed distributions seen in the EDA.  
@@ -180,7 +182,9 @@ For this analysis, I looked at the distribution of average recipe rating, `avg_r
 ></iframe>
 
 
-I also looked at the distribution of calories across all recipes. Below, the histogram shows the distribution of recipe calorie content, capped at 3,000 calories to align with the recommended daily intake for an average adult. Most recipes fall well below this threshold, clustering heavily between 0 and 800 calories, indicating that the majority of dishes are relatively moderate in energy content. Only a small fraction of recipes approach or exceed 2,000 calories, suggesting that high-calorie recipes are rare outliers in the dataset. This cutoff provides a clearer view of the overall calorie distribution by reducing the visual skew caused by extreme values, allowing us to interpret nutritional trends more accurately.
+I also looked at the distribution of calories across all recipes. 
+
+Below, the histogram shows the distribution of recipe calorie content, capped at 3,000 calories to align with the recommended daily intake for an average adult. Most recipes fall well below this threshold, clustering heavily between 0 and 800 calories, indicating that the majority of dishes are relatively moderate in energy content. Only a small fraction of recipes approach or exceed 2,000 calories, suggesting that high-calorie recipes are rare outliers in the dataset. This cutoff provides a clearer view of the overall calorie distribution by reducing the visual skew caused by extreme values, allowing us to interpret nutritional trends more accurately.
 
 <iframe
   src="images/img5.html"
@@ -256,8 +260,7 @@ I first examined whether the missingness of the `description` column in `recipe_
 > **Alternative Hypothesis (H₁):**  
 > The distribution of `minutes` is different for recipes with missing descriptions compared to those with non-missing descriptions.
 
-**Test Statistic:**  
-<code>x̄<sub>missing</sub> − x̄<sub>not missing</sub></code>
+**Test Statistic:** <code>x̄<sub>missing</sub> − x̄<sub>not missing</sub></code>
 
 **Significance Level (α):** 0.05
 
@@ -275,9 +278,7 @@ We examined whether the missingness of the `description` column in `recipe_ratin
 > **Alternative Hypothesis (H₁):**  
 > The distribution of `avg_rating` is different between recipes with missing and non-missing descriptions.
 
-**Test Statistic:**  
-
-<code>x̄<sub>missing</sub> − x̄<sub>not missing</sub></code>
+**Test Statistic:** <code>x̄<sub>missing</sub> − x̄<sub>not missing</sub></code>
 
 **Significance Level (α):** 0.05
 
@@ -299,11 +300,13 @@ Overall, these results indicate that while `minutes` is unrelated to missingness
 
 ### Rating Differences Between "Quick & Easy" and Other Recipes
 
-Understanding how recipe simplicity relates to user satisfaction is important for both recipe creators and online platforms.  
-Recipes that are faster to prepare and use fewer ingredients may appeal to users who value convenience, while more time-intensive dishes might be preferred by users seeking complexity or richer flavor.  To test this relationship, we use the data-driven **`quick_easy`** indicator, which identifies recipes that are both *quick to make* (≤ 35 minutes) and *simple to follow* (≤ 9 steps and ≤ 9 ingredients).
+Understanding how recipe simplicity relates to user satisfaction is important for both recipe creators and online platforms. Recipes that are faster to prepare and use fewer ingredients may appeal to users who value convenience, while more time-intensive dishes might be preferred by users seeking complexity or richer flavor.  
+
+To test this relationship, we use the data-driven **`quick_easy`** indicator, which identifies recipes that are both *quick to make* (≤ 35 minutes) and *simple to follow* (≤ 9 steps and ≤ 9 ingredients).
 
 **Question:**  
-Do “Quick & Easy” recipes receive significantly different average ratings than more complex recipes?
+
+>Do “Quick & Easy” recipes receive significantly different average ratings than more complex recipes?
 
 This analysis helps reveal whether users tend to reward convenience and efficiency with higher satisfaction scores or whether longer, more involved recipes are rated more favorably.
 
@@ -315,8 +318,7 @@ This analysis helps reveal whether users tend to reward convenience and efficien
 > **Alternative Hypothesis (H₁):**  
 > “Quick & Easy” recipes have higher average ratings than non–“Quick & Easy” recipes.
 
-**Test Statistic:**  
-<code>x̄<sub>Quick & Easy</sub> − x̄<sub>Other Recipes</sub></code>
+**Test Statistic:** <code>x̄<sub>Quick & Easy</sub> − x̄<sub>Other Recipes</sub></code>
 
 **Significance Level (α):** 0.05
 
@@ -327,8 +329,7 @@ This analysis helps reveal whether users tend to reward convenience and efficien
 ### Analysis of Hypothesis Test Results
 
 The permutation test reveals a strong and statistically significant difference in user ratings between *Quick & Easy* and *Other* recipes.  
-The observed difference in mean ratings  
-<code>x̄<sub>Quick & Easy</sub> − x̄<sub>Other</sub></code> = 0.1117  is positive, indicating that *Quick & Easy* recipes, on average, receive higher ratings.  
+The observed difference in mean ratings <code>x̄<sub>Quick & Easy</sub> − x̄<sub>Other</sub></code> = 0.1117 is positive, indicating that *Quick & Easy* recipes, on average, receive higher ratings.  
 
 The p-value from the one-sided permutation test is **p = 0.0000**, which is well below the significance threshold of 0.05. This means we **reject the null hypothesis** and conclude that the difference in average ratings is unlikely to have occurred by chance.  
 
@@ -355,6 +356,7 @@ Regression — predicting a continuous value (`avg_rating`).
 
 **Evaluation Metric:**  
 We will evaluate model performance using **Root Mean Squared Error (RMSE)**, as it penalizes larger errors more strongly and is a common metric for continuous prediction tasks.  
+
 Alternatively, **R² (coefficient of determination)** may also be used to assess how well the model explains variability in recipe ratings.
 
 **Goal:**  
@@ -365,14 +367,16 @@ By training this model, we hope to uncover which recipe attributes most strongly
 ### Multiple Linear Regression
 
 To establish a baseline for predicting `avg_rating`, we fit a **Multiple Linear Regression (MLR)** model using the recipe-level quantitative features identified earlier.  
+
 This model serves as a simple yet interpretable benchmark that captures linear relationships between recipe characteristics (e.g., preparation time, ingredient count, nutritional values) and user satisfaction.
 
 The baseline model assumes that each feature contributes additively to the average rating and that the effect of each variable is constant across all recipes.  
+
 While this assumption may oversimplify real-world patterns, it provides an important reference point for evaluating whether more complex models (e.g., polynomial regression or tree-based methods) improve prediction accuracy.
 
 **Model Specification:**
 
-`avg_rating = β₀ + β₁(minutes) + β₂(n_steps) + β₃(n_ingredients) + β₄(calories) + β₅(total_fat) + β₆(sugar) + β₇(sodium) + β₈(protein) + β₉(saturated_fats) + β₁₀(carbohydrates) + ε`
+>`avg_rating = β₀ + β₁(minutes) + β₂(n_steps) + β₃(n_ingredients) + β₄(calories) + β₅(total_fat) + β₆(sugar) + β₇(sodium) + β₈(protein) + β₉(saturated_fats) + β₁₀(carbohydrates) + ε`
 
 **Goal:**  
 Assess how strongly each numeric attribute influences user ratings and establish a baseline error metric (RMSE, R²) for comparison with future models.
@@ -401,11 +405,12 @@ The low R² value (≈0.01) indicates that the baseline model explains less than
 
 Overall, this baseline model serves as a **minimal benchmark**, demonstrating that while numeric recipe attributes such as preparation time and nutritional content may correlate weakly with ratings, they are **insufficient on their own** to model subjective user preferences. Future models should incorporate additional contextual or categorical information—such as recipe type, description text, or contributor metadata—to better explain variations in user ratings.
 
-### Final Model
+## Final Model
 
-## Random Forest with Engineered Complexity and Nutrient Features
+### Random Forest with Engineered Complexity and Nutrient Features
 
 To improve upon the baseline multiple linear regression model (which used only raw numeric features),  
+
 I trained a **Random Forest Regressor** that incorporates two engineered features designed to capture recipe complexity and nutritional balance more directly.
 
 **Base quantitative features (10):**
@@ -442,14 +447,6 @@ All preprocessing (feature engineering) and model training are implemented in a 
 
 ### Final Model Results and Evaluation
 
-The **final model** is a **Random Forest Regressor** designed to capture both procedural complexity and nutritional balance through two newly engineered features:  
-1. **Interaction Term (`F_Complexity = n_steps × minutes`)** – combines recipe length and step count to represent total cooking effort.  
-2. **Ratio Term (`F_NutrientRatio = protein / (carbohydrates + ε)`)** – captures macronutrient balance, distinguishing high-protein meals from carbohydrate-heavy ones.
-
-These features were motivated by the **data-generating process**: users likely rate recipes based on both *effort* and *perceived healthiness*. Recipes that are quick and balanced tend to receive higher satisfaction ratings, while overly complex or nutritionally imbalanced recipes may receive lower ones. By encoding these relationships directly, the model can better capture nonlinear dependencies that the linear baseline could not.
-
----
-
 #### **Model and Hyperparameter Tuning**
 The Random Forest model was optimized using **5-fold cross-validation** via `GridSearchCV`.  
 The following hyperparameters were tuned:
@@ -459,7 +456,7 @@ The following hyperparameters were tuned:
 
 The **best configuration** selected by the grid search was:
                             
-                    `{'model__max_depth': None, 'model__max_features': 'sqrt', 'model__n_estimators': 150}`
+                `{'model__max_depth': None, 'model__max_features': 'sqrt', 'model__n_estimators': 150}`
 
 ---
 
@@ -478,9 +475,9 @@ The final Random Forest model achieved a **Root Mean Squared Error (RMSE)** of *
 
 This improvement reflects how the engineered features captured latent relationships in the data:
 
-`F_Complexity` quantifies overall recipe effort — complex, time-intensive recipes tend to have lower ratings due to user fatigue or difficulty.
+>`F_Complexity` quantifies overall recipe effort — complex, time-intensive recipes tend to have lower ratings due to user fatigue or difficulty.
 
-`F_NutrientRatio` captures nutritional appeal — users tend to favor balanced, protein-rich recipes.
+>`F_NutrientRatio` captures nutritional appeal — users tend to favor balanced, protein-rich recipes.
 
 From the perspective of the data-generating process, these factors mirror real-world user behavior: satisfaction is influenced by both ease of preparation and nutritional balance. The Random Forest’s nonlinear nature also allows it to model these effects more flexibly than the linear regression baseline.
 
@@ -488,7 +485,7 @@ From the perspective of the data-generating process, these factors mirror real-w
 
 The final Random Forest Regressor demonstrates a meaningful performance improvement over the baseline model by incorporating domain-informed feature engineering. While overall predictive power remains moderate—reflecting the inherent noise in user ratings—the model effectively captures complex, interpretable patterns related to recipe effort and nutritional content, validating the usefulness of the engineered features.
 
-### Fairness Analysis
+## Fairness Analysis
 
 To test for fairness of our final model on different groups, I used the *trained Random Forest Regressor* (which excluded `quick_easy` as a feature) and computed the RMSE for each group:
 
@@ -502,11 +499,12 @@ In contrast, the higher RMSE for **Other Recipes** indicates slightly reduced ac
 
 Overall, the model shows a **small but notable fairness gap** in favor of the Quick & Easy group, though both RMSE values remain within a reasonable range, indicating broadly consistent performance across recipe types.
 
-## Model Performance Across Recipe Categories
+### Model Performance Across Recipe Categories
 
 To assess whether the final model performs fairly across recipe types, we conducted a **fairness analysis** comparing prediction errors for *Quick & Easy* recipes and *Other* recipes.
 
 Because this is a regression problem, we evaluate fairness using **Root Mean Squared Error (RMSE)** instead of classification metrics.  
+
 A large discrepancy in RMSE between the two groups would suggest the model predicts one group’s ratings more accurately than the other’s.
 
 **Groups Tested:**
@@ -526,7 +524,7 @@ Difference in RMSE between groups (Quick & Easy − Other Recipes)
 
 <iframe src="images/fair_null.html" width="800" height="600" frameborder="0"></iframe>
 
-## Fairness Analysis Results: Quick & Easy vs. Other Recipes
+### Fairness Analysis Results: Quick & Easy vs. Other Recipes
 
 #### Results
 - **Observed RMSE difference:** −0.0365  
