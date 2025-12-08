@@ -138,11 +138,22 @@ By explicitly marking this subset of recipes, later analyses could explore wheth
 
 Below is the final `recipe_ratings` dataframe to be used for the rest of the analysis:
 
-<iframe src="images/recipe_ratings.html" width="800" height="300" frameborder="0"></iframe>
+| name                                 |   minutes |   n_steps | description                                                                                                                                                                                                                                                                                                                                                                       |   n_ingredients |   rating |   avg_rating |   calories |   total_fat |   sugar |   sodium |   protein |   saturated_fats |   carbohydrates | quick_easy   |
+|:-------------------------------------|----------:|----------:|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------:|---------:|-------------:|-----------:|------------:|--------:|---------:|----------:|-----------------:|----------------:|:-------------|
+| 1 brownies in the world    best ever |        40 |        10 | these are the most; chocolatey, moist, rich, dense, fudgy, delicious brownies that you'll ever make.....sereiously! there's no doubt that these will be your fav brownies ever for you can add things to them or make them plain.....either way they're pure heaven!                                                                                                              |               9 |        4 |            4 |      138.4 |          10 |      50 |        3 |         3 |               19 |               6 | False        |
+| 1 in canada chocolate chip cookies   |        45 |        12 | this is the recipe that we use at my school cafeteria for chocolate chip cookies. they must be the best chocolate chip cookies i have ever had! if you don't have margarine or don't like it, then just use butter (softened) instead.                                                                                                                                            |              11 |        5 |            5 |      595.1 |          46 |     211 |       22 |        13 |               51 |              26 | False        |
+| 412 broccoli casserole               |        40 |         6 | since there are already 411 recipes for broccoli casserole posted to "zaar" ,i decided to call this one  #412 broccoli casserole.i don't think there are any like this one in the database. i based this one on the famous "green bean casserole" from campbell's soup. but i think mine is better since i don't like cream of mushroom soup.submitted to "zaar" on may 28th,2008 |               9 |        5 |            5 |      194.8 |          20 |       6 |       32 |        22 |               36 |               3 | False        |
+| 412 broccoli casserole               |        40 |         6 | since there are already 411 recipes for broccoli casserole posted to "zaar" ,i decided to call this one  #412 broccoli casserole.i don't think there are any like this one in the database. i based this one on the famous "green bean casserole" from campbell's soup. but i think mine is better since i don't like cream of mushroom soup.submitted to "zaar" on may 28th,2008 |               9 |        5 |            5 |      194.8 |          20 |       6 |       32 |        22 |               36 |               3 | False        |
+| 412 broccoli casserole               |        40 |         6 | since there are already 411 recipes for broccoli casserole posted to "zaar" ,i decided to call this one  #412 broccoli casserole.i don't think there are any like this one in the database. i based this one on the famous "green bean casserole" from campbell's soup. but i think mine is better since i don't like cream of mushroom soup.submitted to "zaar" on may 28th,2008 |               9 |        5 |            5 |      194.8 |          20 |       6 |       32 |        22 |               36 |               3 | False        |
+
 
 Let's look at the proportion of `quick_easy` recipes in our complete dataframe: 
 
-<iframe src="images/prop_quick_easy.html" width="800" height="300" frameborder="0"></iframe>
+| quick_easy   |   proportion |
+|:-------------|-------------:|
+| False        |     0.708701 |
+| True         |     0.291299 |
+
 
 ### Distribution of "Quick & Easy" Recipes
 
@@ -206,7 +217,10 @@ Overall, these trends reinforce the idea that *Quick & Easy* recipes are not onl
 
 In this section, I created the pivot table below that compares *Quick & Easy* recipes to other recipes across key feedback and complexity metrics.  
 
-<iframe src="images/int_agg.html" width="800" height="300" frameborder="0"></iframe>
+| quick_easy   |   avg_rating |   minutes |   n_ingredients |   recipe_count |
+|:-------------|-------------:|----------:|----------------:|---------------:|
+| False        |         4.35 |     80.28 |           10.3  |         165043 |
+| True         |         4.46 |     16.01 |            6.08 |          67838 |
 
 On average, **Quick & Easy recipes receive slightly higher user ratings** while requiring **significantly less preparation time and fewer ingredients**.
 
@@ -230,11 +244,11 @@ To better understand this missingness and potentially reclassify it as **Missing
 
 ### MAR Analysis
 
-The missingness of the `recipe_ratings`'s `description` column is not due to the content of the description itself (i.e., whether the recipe is good or bad),     but rather depends on other observed variables in the dataset, such as: either `minutes` or `avg_rating`. I tested whether missingness in description depends on `minutes` or `avg_rating` via a permutation test.
+The missingness of the `recipe_ratings`'s `description` column is not due to the content of the description itself (i.e., whether the recipe is good or bad), but rather depends on other observed variables in the dataset, such as: either `minutes` or `avg_rating`. I tested whether missingness in description depends on `minutes` or `avg_rating` via a permutation test.
 
 ### Missingness Dependency (`minutes`)
 
-We first examined whether the missingness of the `description` column in `recipe_ratings` depends on the `minutes` required for each recipe.
+I first examined whether the missingness of the `description` column in `recipe_ratings` depends on the `minutes` required for each recipe.
 
 > **Null Hypothesis (H₀):**  
 > The distribution of `minutes` is the same for recipes with missing and non-missing descriptions (MCAR).  
@@ -243,13 +257,13 @@ We first examined whether the missingness of the `description` column in `recipe
 > The distribution of `minutes` is different for recipes with missing descriptions compared to those with non-missing descriptions.
 
 **Test Statistic:**  
-$$ \bar{x}_{\text{missing}} - \bar{x}_{\text{not missing}} $$
+<code>x̄<sub>missing</sub> − x̄<sub>not missing</sub></code>
 
 **Significance Level (α):** 0.05
 
-<iframe src="images/kde_minutes.html" width="800" height="300" frameborder="0"></iframe>
+<iframe src="images/kde_minutes.html" width="800" height="600" frameborder="0"></iframe>
 
-<iframe src="images/null_minutes.html" width="800" height="300" frameborder="0"></iframe>
+<iframe src="images/null_minutes.html" width="800" height="600" frameborder="0"></iframe>
 
 ### Missingness Dependency (`avg_rating`)
 
@@ -262,25 +276,22 @@ We examined whether the missingness of the `description` column in `recipe_ratin
 > The distribution of `avg_rating` is different between recipes with missing and non-missing descriptions.
 
 **Test Statistic:**  
-$$
-\bar{x}_{\text{missing}} - \bar{x}_{\text{not missing}}
-$$
+
+<code>x̄<sub>missing</sub> − x̄<sub>not missing</sub></code>
 
 **Significance Level (α):** 0.05
 
-<iframe src="images/kde_avg_rating.html" width="800" height="300" frameborder="0"></iframe>
+<iframe src="images/kde_avg_rating.html" width="800" height="600" frameborder="0"></iframe>
 
-<iframe src="images/null_avg_rating.html" width="800" height="300" frameborder="0"></iframe>
-
+<iframe src="images/null_avg_rating.html" width="800" height="6000" frameborder="0"></iframe>
 
 The permutation tests reveal contrasting patterns in how missingness of the `description` column relates to other recipe attributes.  
 
-For **`minutes`**, the observed difference in means between recipes with and without missing descriptions was small, and the p-value was high (*p* ≈ 0.56).  
-This indicates that we **fail to reject the null hypothesis**, suggesting that the likelihood of a missing description is independent of the time required to prepare a recipe.  
+For **`minutes`**, the observed difference in means between recipes with and without missing descriptions was small, and the p-value was high (*p* ≈ 0.56). This indicates that we **fail to reject the null hypothesis**, suggesting that the likelihood of a missing description is independent of the time required to prepare a recipe.  
+
 This pattern is consistent with a **Missing Completely at Random (MCAR)** mechanism.  
 
-In contrast, for **`avg_rating`**, the observed difference was more pronounced, and the permutation test yielded a low p-value (*p* ≈ 0.004).  
-We therefore **reject the null hypothesis** and conclude that the missingness of `description` is **dependent on `avg_rating`**.  
+In contrast, for **`avg_rating`**, the observed difference was more pronounced, and the permutation test yielded a low p-value (*p* ≈ 0.004). We therefore **reject the null hypothesis** and conclude that the missingness of `description` is **dependent on `avg_rating`**.  
 
 Overall, these results indicate that while `minutes` is unrelated to missingness, `avg_rating` exhibits a **Missing At Random (MAR)** relationship with `description`.
 
@@ -289,8 +300,7 @@ Overall, these results indicate that while `minutes` is unrelated to missingness
 ### Rating Differences Between "Quick & Easy" and Other Recipes
 
 Understanding how recipe simplicity relates to user satisfaction is important for both recipe creators and online platforms.  
-Recipes that are faster to prepare and use fewer ingredients may appeal to users who value convenience, while more time-intensive dishes might be preferred by users seeking complexity or richer flavor.  
-To test this relationship, we use the data-driven **`quick_easy`** indicator, which identifies recipes that are both *quick to make* (≤ 35 minutes) and *simple to follow* (≤ 9 steps and ≤ 9 ingredients).
+Recipes that are faster to prepare and use fewer ingredients may appeal to users who value convenience, while more time-intensive dishes might be preferred by users seeking complexity or richer flavor.  To test this relationship, we use the data-driven **`quick_easy`** indicator, which identifies recipes that are both *quick to make* (≤ 35 minutes) and *simple to follow* (≤ 9 steps and ≤ 9 ingredients).
 
 **Question:**  
 Do “Quick & Easy” recipes receive significantly different average ratings than more complex recipes?
@@ -306,25 +316,21 @@ This analysis helps reveal whether users tend to reward convenience and efficien
 > “Quick & Easy” recipes have higher average ratings than non–“Quick & Easy” recipes.
 
 **Test Statistic:**  
-$$ \bar{x}_{\text{quick and easy}} - \bar{x}_{\text{other recipes}} $$
+<code>x̄<sub>Quick & Easy</sub> − x̄<sub>Other Recipes</sub></code>
 
 **Significance Level (α):** 0.05
 
-<iframe src="images/hyp_kde.html" width="800" height="300" frameborder="0"></iframe>
+<iframe src="images/hyp_kde.html" width="800" height="600" frameborder="0"></iframe>
 
-<iframe src="images/hyp_null.html" width="800" height="300" frameborder="0"></iframe>
+<iframe src="images/hyp_null.html" width="800" height="600" frameborder="0"></iframe>
 
 ### Analysis of Hypothesis Test Results
 
 The permutation test reveals a strong and statistically significant difference in user ratings between *Quick & Easy* and *Other* recipes.  
 The observed difference in mean ratings  
-$$
-\bar{x}_{\text{Quick and Easy}} - \bar{x}_{\text{Other}} = 0.1117
-$$
-is positive, indicating that *Quick & Easy* recipes, on average, receive higher ratings.  
+<code>x̄<sub>Quick & Easy</sub> − x̄<sub>Other</sub></code> = 0.1117  is positive, indicating that *Quick & Easy* recipes, on average, receive higher ratings.  
 
-The p-value from the one-sided permutation test is **p = 0.0000**, which is well below the significance threshold of 0.05.  
-This means we **reject the null hypothesis** and conclude that the difference in average ratings is unlikely to have occurred by chance.  
+The p-value from the one-sided permutation test is **p = 0.0000**, which is well below the significance threshold of 0.05. This means we **reject the null hypothesis** and conclude that the difference in average ratings is unlikely to have occurred by chance.  
 
 In practical terms, users appear to **favor simpler and faster recipes**, suggesting that convenience plays a meaningful role in how positively recipes are rated. This finding aligns with the broader trend observed in exploratory analysis — recipes that are easier to prepare tend to attract higher user satisfaction, perhaps due to their accessibility, reliability, or lower cognitive effort required.
 
@@ -333,8 +339,7 @@ In practical terms, users appear to **favor simpler and faster recipes**, sugges
 
 ### Estimating Recipe Ratings from Numeric Attributes
 
-In this section, I aim to predict the **average rating (`avg_rating`)** of a recipe based on its **quantitative features**, such as preparation time, nutritional values, and recipe complexity measures.  
-This prediction problem aligns with the broader goal of understanding what factors drive user satisfaction and how recipe characteristics relate to perceived quality.
+In this section, I aim to predict the **average rating (`avg_rating`)** of a recipe based on its **quantitative features**, such as preparation time, nutritional values, and recipe complexity measures. This prediction problem aligns with the broader goal of understanding what factors drive user satisfaction and how recipe characteristics relate to perceived quality.
 
 Since `avg_rating` is a **continuous numerical variable**, this task is framed as a **regression problem**.  
 The goal is to model the relationship between recipe-level predictors (e.g., `minutes`, `n_steps`, `n_ingredients`, `calories`, `protein`, `carbohydrates`, etc.) and the average rating users assign to each recipe.
@@ -355,9 +360,9 @@ Alternatively, **R² (coefficient of determination)** may also be used to assess
 **Goal:**  
 By training this model, we hope to uncover which recipe attributes most strongly influence user ratings and assess how accurately these quantitative factors can predict overall satisfaction.
 
-### Baseline Model
+## Baseline Model
 
-## Multiple Linear Regression
+### Multiple Linear Regression
 
 To establish a baseline for predicting `avg_rating`, we fit a **Multiple Linear Regression (MLR)** model using the recipe-level quantitative features identified earlier.  
 This model serves as a simple yet interpretable benchmark that captures linear relationships between recipe characteristics (e.g., preparation time, ingredient count, nutritional values) and user satisfaction.
@@ -367,11 +372,7 @@ While this assumption may oversimplify real-world patterns, it provides an impor
 
 **Model Specification:**
 
-$$\text{avg\_rating} = \beta_0 + \beta_1(\text{minutes}) + \beta_2(\text{n\_steps}) + 
-\beta_3(\text{n\_ingredients}) + \beta_4(\text{calories}) + \beta_5(\text{total\_fat}) + 
-\beta_6(\text{sugar}) + \beta_7(\text{sodium}) + \beta_8(\text{protein}) + 
-\beta_9(\text{saturate\_fats}) + \beta_{10}(\text{carbohydrates})) + \epsilon
-$$
+`avg_rating = β₀ + β₁(minutes) + β₂(n_steps) + β₃(n_ingredients) + β₄(calories) + β₅(total_fat) + β₆(sugar) + β₇(sodium) + β₈(protein) + β₉(saturated_fats) + β₁₀(carbohydrates) + ε`
 
 **Goal:**  
 Assess how strongly each numeric attribute influences user ratings and establish a baseline error metric (RMSE, R²) for comparison with future models.
