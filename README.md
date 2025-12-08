@@ -35,19 +35,15 @@ Data Volume:
 | `'minutes'`        | Minutes to prepare recipe                                                                                                                                                                         |
 | `'nutrition'`      | Nutrition information in the form [calories (#), total fat (PDV), sugar (PDV), sodium (PDV), protein (PDV), saturated fat (PDV), carbohydrates (PDV)]; PDV stands for “percentage of daily value” |
 | `'n_steps'`        | Number of steps in recipe                                                                                                                                                                         |
-| `'steps'`          | Text for recipe steps, in order                                                                                                                                                                   |
 | `'description'`    | User-provided description                                                                                                                                                                         |
 | `'n_ingredients'`  | Number of ingredients in recipe                                                                                                                                                                   |
-
-
 - `ratings`
     - Rows and Columns: 731927 rows (recipes) and 5 columns
     - The relevant columns from `ratings`: `recipe_id`, `rating`.
-| Column Name | Description |
-| :------- | :------ |
-| `recipe_id`  | Recipe ID |
-| `rating`  | Rating Given |
-
+| Column        | Description         |
+| :------------ | :------------------ |
+| `'recipe_id'` | Recipe ID           |
+| `'rating'`    | Rating given        |
 
 
 ***
