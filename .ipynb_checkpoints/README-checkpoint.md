@@ -110,7 +110,6 @@ Histograms were then generated to visualize how recipes are distributed across e
   frameborder="0"
 ></iframe>
 
-
 ### Exploring Recipe Complexity
 
 The distributions revealed that most recipes cluster toward the **lower end** of preparation time, number of steps, and ingredient count.  
@@ -137,9 +136,117 @@ If a recipe satisfies all three conditions, `quick_easy = True`; otherwise, it i
 This classification serves as a way to distinguish **simpler, more accessible recipes** from those that are more time-consuming or complex.  
 By explicitly marking this subset of recipes, later analyses could explore whether *quick and easy* recipes differ meaningfully in their **average user ratings**, **nutritional values**, or **model fairness** — ultimately helping to reveal how convenience influences perceived recipe quality.
 
+Below is the final `recipe_ratings` dataframe to be used for the rest of the analysis:
+
+<iframe src="images/recipe_ratings.html" width="800" height="300" frameborder="0"></iframe>
+
+Let's look at the proportion of `quick_easy` recipes in our complete dataframe: 
+
+<iframe src="images/prop_quick_easy.html" width="800" height="300" frameborder="0"></iframe>
+
+### Distribution of "Quick & Easy" Recipes
+
+After defining the `quick_easy` indicator using data-driven thresholds (≤ 35 minutes, ≤ 9 steps, ≤ 9 ingredients),  
+we found that approximately **30% of recipes** meet these criteria, while **70% do not**.
+
+This distribution indicates that:
+- A substantial minority of recipes can be described as *Quick & Easy*, aligning with the right-skewed distributions seen in the EDA.  
+- Most recipes are moderately or highly complex in preparation time, steps, or ingredients, suggesting that the dataset represents a wide range of cooking styles—from simple weekday meals to more involved dishes.
+
+The 70/30 split confirms that the `quick_easy` feature effectively distinguishes a meaningful subgroup of recipes rather than labeling all recipes as simple.  
+
+This distinction will be valuable in later analyses examining whether these simpler recipes receive higher ratings.
+
+### Univariate Analysis
+
+For this analysis, I looked at the distribution of average recipe rating, `avg_rating`, across all recipe types. Below, the distribution is heavily left-skewed, indicating that most recipes receive very high user ratings. The majority of ratings cluster tightly between 4.0 and 5.0, suggesting that users tend to rate recipes positively, with few low-scoring outliers.
+
+<iframe
+  src="images/img4.html"
+  width="800"
+  height="600"
+  frameborder="0"
+></iframe>
 
 
+I also looked at the distribution of calories across all recipes. Below, the histogram shows the distribution of recipe calorie content, capped at 3,000 calories to align with the recommended daily intake for an average adult. Most recipes fall well below this threshold, clustering heavily between 0 and 800 calories, indicating that the majority of dishes are relatively moderate in energy content. Only a small fraction of recipes approach or exceed 2,000 calories, suggesting that high-calorie recipes are rare outliers in the dataset. This cutoff provides a clearer view of the overall calorie distribution by reducing the visual skew caused by extreme values, allowing us to interpret nutritional trends more accurately.
 
-print(recipe_ratings[['name', 'minutes', 'n_steps', 'description', 'n_ingredients', 'rating', 'avg_rating', 'calories', 'total_fat', 'sugar', 'sodium', 'protein', 'saturated_fats', 'carbohydrates', 'quick_easy]].head().to_markdown(index=False))
+<iframe
+  src="images/img5.html"
+  width="800"
+  height="600"
+  frameborder="0"
+></iframe>
+
+### Bivariate Analysis
+
+Next, for this analysis, I examined the distribution of the average recipe rating and calories conditional on whether the recipe was labeled "Quick and Easy", `quick_easy = True` or labeled "Other Recipe", `quick_easy = False`. 
+
+The first density plot compares the distributions of **average ratings** between *Quick & Easy* and *Other Recipes*. Both groups show a strong right-skew, with most ratings concentrated between **4.0 and 5.0**, indicating that users generally rate recipes positively regardless of preparation complexity. However, *Quick & Easy* recipes have a slightly higher peak near 5.0, suggesting that simpler, faster recipes may be marginally more appreciated by users.
+
+<iframe
+  src="images/imgavg_rating.html"
+  width="800"
+  height="600"
+  frameborder="0"
+></iframe>
+
+The second plot compares the distributions of **calorie content** across the same two groups. Both distributions are heavily right-skewed, but *Quick & Easy* recipes show a sharper concentration near the lower end, indicating that these recipes tend to be lighter and less calorically dense. In contrast, *Other Recipes* exhibit a longer tail, implying that more complex recipes often involve richer or more calorie-heavy ingredients.
+
+<iframe
+  src="images/imgcalories.html"
+  width="800"
+  height="600"
+  frameborder="0"
+></iframe>
+
+Overall, these trends reinforce the idea that *Quick & Easy* recipes are not only simpler and faster but also **leaner** while maintaining **similarly high user satisfaction**.
+
+### Interesting Aggregates
+
+In this section, I created the pivot table below that compares *Quick & Easy* recipes to other recipes across key feedback and complexity metrics.  
+
+<iframe src="images/int_agg.html" width="800" height="300" frameborder="0"></iframe>
+
+On average, **Quick & Easy recipes receive slightly higher user ratings** while requiring **significantly less preparation time and fewer ingredients**.
+
+For example, the mean cooking time and ingredient count are both markedly lower for *Quick & Easy* dishes, confirming that this category successfully captures simpler, more efficient recipes.  
+
+Interestingly, although *Quick & Easy* recipes represent a smaller share of the dataset (fewer total entries), they maintain **comparable or better satisfaction levels**. This suggests that users appreciate recipes that balance convenience and quality—favoring dishes that deliver good results without excessive time or ingredient demands.  
+
+Overall, the pivot table reinforces the finding that **simplicity correlates with positive user feedback**, highlighting *Quick & Easy* recipes as both accessible and well-received.
+
+## Assessment of Missingness
+
+Let's look at the `recipe_ratings` where three columns: `description`, `rating`, `review` had missing values. Thus, an assessment of missingness will be conducted below to determine the missingness mechanism for `description`.
+
+### Assessing NMAR Missingness
+
+The `description` column in the `recipe_ratings` dataset appears to contain missing values that may be **Not Missing At Random (NMAR)**.  
+
+This is because the likelihood of a missing description could depend on the content itself—for instance, recipes that are simple or self-explanatory might be less likely to include written descriptions, whereas more complex or unique recipes may have detailed ones. If this is the case, the missingness depends on the unobserved variable (the *description text*), which is a defining characteristic of NMAR data.  
+
+To better understand this missingness and potentially reclassify it as **Missing At Random (MAR)**, we would need additional information—such as the recipe author’s activity level, experience, or submission history—to see whether description completeness is influenced by user behavior rather than the unseen content itself.
+
+### MAR Analysis
+
+The missingness of the `recipe_ratings`'s `description` column is not due to the content of the description itself (i.e., whether the recipe is good or bad),     but rather depends on other observed variables in the dataset, such as: either `minutes` or `avg_rating`. I tested whether missingness in description depends on `minutes` or `avg_rating` via a permutation test.
+
+### Missingness Dependency (`minutes`)
+
+We first examined whether the missingness of the `description` column in `recipe_ratings` depends on the `minutes` required for each recipe.
+
+> **Null Hypothesis (H₀):**  
+> The distribution of `minutes` is the same for recipes with missing and non-missing descriptions (MCAR).  
+>
+> **Alternative Hypothesis (H₁):**  
+> The distribution of `minutes` is different for recipes with missing descriptions compared to those with non-missing descriptions.
+
+**Test Statistic:**  
+$$ \bar{x}_{\text{missing}} - \bar{x}_{\text{not missing}} $$
+
+**Significance Level (α):** 0.05
+
+
 
 
