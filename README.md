@@ -283,7 +283,7 @@ We examined whether the missingness of the `description` column in `recipe_ratin
 
 <iframe src="images/kde_avg_rating.html" width="800" height="600" frameborder="0"></iframe>
 
-<iframe src="images/null_avg_rating.html" width="800" height="6000" frameborder="0"></iframe>
+<iframe src="images/null_avg_rating.html" width="800" height="600" frameborder="0"></iframe>
 
 The permutation tests reveal contrasting patterns in how missingness of the `description` column relates to other recipe attributes.  
 
@@ -400,4 +400,156 @@ All numeric features were passed through unchanged (`"passthrough"`) without sca
 The low R² value (≈0.01) indicates that the baseline model explains less than 1% of the variance in recipe ratings, suggesting that numeric features alone provide **limited predictive power** for user satisfaction. The relatively high RMSE (≈0.85), given that ratings range from 0 to 5, further suggests that the model’s predictions deviate substantially from observed ratings.  
 
 Overall, this baseline model serves as a **minimal benchmark**, demonstrating that while numeric recipe attributes such as preparation time and nutritional content may correlate weakly with ratings, they are **insufficient on their own** to model subjective user preferences. Future models should incorporate additional contextual or categorical information—such as recipe type, description text, or contributor metadata—to better explain variations in user ratings.
+
+### Final Model
+
+## Random Forest with Engineered Complexity and Nutrient Features
+
+To improve upon the baseline multiple linear regression model (which used only raw numeric features),  
+I trained a **Random Forest Regressor** that incorporates two engineered features designed to capture recipe complexity and nutritional balance more directly.
+
+**Base quantitative features (10):**
+
+- `minutes`, `n_steps`, `n_ingredients`
+- `calories`, `total_fat`, `sugar`, `sodium`
+- `protein`, `saturated_fats`, `carbohydrates`
+
+These describe time, procedural complexity, and the nutritional profile of each recipe.
+
+**Engineered features (2):**
+
+1. **Interaction term: `F_complexity = n_steps × minutes`**  
+This feature measures how time and procedural complexity interact. Recipes that are both long and involve many steps will have very high `F_complexity`, reflecting a labor-intensive process that may negatively impact user satisfaction.
+
+2. **Ratio term: `F_nutrient_ratio = protein / (carbohydrates + ε)`**  
+   This feature captures the balance between protein and carbohydrates, a key aspect of nutritional “type.”  
+   - High values indicate high-protein, lower-carb recipes (e.g., steak and vegetables).  
+   - Low values indicate carb-heavy dishes (e.g., pasta, desserts).
+
+    A small constant ε is added to the denominator to avoid division by zero.
+
+Both engineered features are created **inside the sklearn Pipeline** via a custom transformer, so they are always computed consistently during training and testing.
+
+**Hyperparameter Tuning**
+
+To further improve performance and control model complexity, I tuned the following Random Forest hyperparameters using `GridSearchCV` with 5-fold cross-validation:
+
+- `n_estimators`: number of trees in the forest (`[150]`)  
+- `max_depth`: maximum depth of each tree (`[20, 25, None]`)  
+- `max_features`: number of features considered when looking for the best split (`['sqrt']`)
+
+All preprocessing (feature engineering) and model training are implemented in a single sklearn `Pipeline`, and the best model is selected based on validation R².
+
+### Final Model Results and Evaluation
+
+The **final model** is a **Random Forest Regressor** designed to capture both procedural complexity and nutritional balance through two newly engineered features:  
+1. **Interaction Term (`F_Complexity = n_steps × minutes`)** – combines recipe length and step count to represent total cooking effort.  
+2. **Ratio Term (`F_NutrientRatio = protein / (carbohydrates + ε)`)** – captures macronutrient balance, distinguishing high-protein meals from carbohydrate-heavy ones.
+
+These features were motivated by the **data-generating process**: users likely rate recipes based on both *effort* and *perceived healthiness*. Recipes that are quick and balanced tend to receive higher satisfaction ratings, while overly complex or nutritionally imbalanced recipes may receive lower ones. By encoding these relationships directly, the model can better capture nonlinear dependencies that the linear baseline could not.
+
+---
+
+#### **Model and Hyperparameter Tuning**
+The Random Forest model was optimized using **5-fold cross-validation** via `GridSearchCV`.  
+The following hyperparameters were tuned:
+- `max_depth ∈ [10, 15, 20, 25]` – controls tree depth and model complexity.  
+- `max_features = "sqrt"` – ensures that only a subset of features is considered at each split, reducing overfitting.  
+- `n_estimators = 150` – fixed to balance accuracy and runtime.
+
+The **best configuration** selected by the grid search was:
+                            
+                    `{'model__max_depth': None, 'model__max_features': 'sqrt', 'model__n_estimators': 150}`
+
+---
+
+**Model Performance**
+- **Root Mean Squared Error (RMSE):** 0.5899  
+- **R² (Coefficient of Determination):** 0.5179  
+
+---
+
+<iframe src="images/base_vs_final.html" width="800" height="600" frameborder="0"></iframe>
+
+
+**Interpretation:**  
+
+The final Random Forest model achieved a **Root Mean Squared Error (RMSE)** of **0.5899**, a significant improvement from the baseline RMSE of 0.8459. The **R² score** increased substantially from **0.0087** to **0.5179**, indicating that the model now explains approximately 51.8% of the variance in recipe ratings compared to less than 1% previously.
+
+This improvement reflects how the engineered features captured latent relationships in the data:
+
+`F_Complexity` quantifies overall recipe effort — complex, time-intensive recipes tend to have lower ratings due to user fatigue or difficulty.
+
+`F_NutrientRatio` captures nutritional appeal — users tend to favor balanced, protein-rich recipes.
+
+From the perspective of the data-generating process, these factors mirror real-world user behavior: satisfaction is influenced by both ease of preparation and nutritional balance. The Random Forest’s nonlinear nature also allows it to model these effects more flexibly than the linear regression baseline.
+
+**Conclusion:**
+
+The final Random Forest Regressor demonstrates a meaningful performance improvement over the baseline model by incorporating domain-informed feature engineering. While overall predictive power remains moderate—reflecting the inherent noise in user ratings—the model effectively captures complex, interpretable patterns related to recipe effort and nutritional content, validating the usefulness of the engineered features.
+
+### Fairness Analysis
+
+To test for fairness of our final model on different groups, I used the *trained Random Forest Regressor* (which excluded `quick_easy` as a feature) and computed the RMSE for each group:
+
+- RMSE (Quick & Easy): 0.3493   
+- RMSE (Other Recipes): 0.3855 
+
+**Interpretation:**  
+The model achieves **lower error for Quick & Easy recipes**, suggesting it predicts user ratings for these faster, simpler recipes more accurately than for more complex ones. This difference implies that the model generalizes better for straightforward, low-effort dishes, possibly because such recipes exhibit more consistent patterns in numeric features (e.g., minutes, steps, and calories).  
+
+In contrast, the higher RMSE for **Other Recipes** indicates slightly reduced accuracy, potentially due to greater variability in ingredient counts, preparation times, or nutrient composition that the current numeric-only feature set does not fully capture.  
+
+Overall, the model shows a **small but notable fairness gap** in favor of the Quick & Easy group, though both RMSE values remain within a reasonable range, indicating broadly consistent performance across recipe types.
+
+## Model Performance Across Recipe Categories
+
+To assess whether the final model performs fairly across recipe types, we conducted a **fairness analysis** comparing prediction errors for *Quick & Easy* recipes and *Other* recipes.
+
+Because this is a regression problem, we evaluate fairness using **Root Mean Squared Error (RMSE)** instead of classification metrics.  
+A large discrepancy in RMSE between the two groups would suggest the model predicts one group’s ratings more accurately than the other’s.
+
+**Groups Tested:**
+- **Group X (Quick & Easy):** Recipes labeled as quick and simple to make  
+- **Group Y (Other Recipes):** All remaining recipes
+
+**Hypotheses:**
+>**Null Hypothesis (H₀):** The model is fair — its prediction error (RMSE) is the same for both groups, and any observed difference is due to chance.  
+>**Alternative Hypothesis (H₁):** The model is unfair — its RMSE differs significantly between the two groups.  
+
+**Test Statistic:**  
+Difference in RMSE between groups (Quick & Easy − Other Recipes)
+
+**Significance Level:** α = 0.05
+
+<iframe src="images/fair_kde.html" width="800" height="600" frameborder="0"></iframe>
+
+<iframe src="images/fair_null.html" width="800" height="600" frameborder="0"></iframe>
+
+## Fairness Analysis Results: Quick & Easy vs. Other Recipes
+
+#### Results
+- **Observed RMSE difference:** −0.0365  
+- **Permutation p-value:** 0.0070  
+
+The **negative observed difference** indicates that the model’s RMSE is **lower for Quick & Easy recipes**, meaning it predicts these simpler, faster recipes more accurately than more complex ones.  
+The **p-value of 0.0070** suggests this difference is statistically significant at the 0.05 level, providing strong evidence that the model performs differently across the two groups.
+
+---
+
+#### Interpretation
+The fairness analysis shows that the final Random Forest model exhibits a **performance disparity favoring Quick & Easy recipes**.  
+
+This implies that the model generalizes better to **low-effort, straightforward recipes**, which tend to have fewer ingredients, shorter preparation times, and simpler nutrient profiles. These characteristics align well with the numeric features used during training, allowing the model to capture their patterns more effectively.
+
+In contrast, the slightly **higher RMSE for Other Recipes** suggests that the model struggles to predict ratings for **longer, more complex dishes**. These recipes likely involve more qualitative nuances—such as taste complexity, ingredient interactions, or cultural factors—that are not captured by the current numeric features.
+
+---
+
+#### Conclusion
+The model demonstrates **a mild but measurable fairness concern**: it performs significantly better for the *Quick & Easy* subset than for more complex recipes. While this bias does not invalidate the model, it indicates that **simpler recipes are systematically easier for the model to predict accurately**.  
+
+Future iterations could mitigate this disparity by incorporating **richer, non-numeric features**—for example, textual embeddings from recipe descriptions or categorical encodings for cuisine type—to better represent the complexity of diverse recipes and improve fairness across groups.
+
+
 
