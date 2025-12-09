@@ -57,7 +57,7 @@ Data Volume:
 
 To begin the analysis, two primary datasets were merged: the **recipes** dataset (containing information such as preparation time, ingredients, and nutritional values) and the **ratings** dataset (containing individual user ratings for each recipe).  
 
-The merge was performed on the shared key column, `recipe_id`, using an **inner join** to ensure that only recipes with at least one corresponding rating were included in the resulting dataset.
+The merge was performed on the shared key column, `recipe_id`, using an **left join**. I then filled all missing `rating`s with 0. This is because missingness in this column means no users rated the recipe thus having a 0 rating.
 
 After merging, an **`avg_rating`** column was created to represent the **average user rating** for each recipe.  
 
@@ -180,9 +180,6 @@ For this analysis, I looked at the distribution of average recipe rating, `avg_r
   height="600"
   frameborder="0"
 ></iframe>
-
-
-I also looked at the distribution of calories across all recipes. 
 
 Below, the histogram shows the distribution of recipe calorie content, capped at 3,000 calories to align with the recommended daily intake for an average adult. Most recipes fall well below this threshold, clustering heavily between 0 and 800 calories, indicating that the majority of dishes are relatively moderate in energy content. Only a small fraction of recipes approach or exceed 2,000 calories, suggesting that high-calorie recipes are rare outliers in the dataset. This cutoff provides a clearer view of the overall calorie distribution by reducing the visual skew caused by extreme values, allowing us to interpret nutritional trends more accurately.
 
